@@ -32,6 +32,10 @@ class HomePage {
     get socialSecurityBenefitsYesRadioBtn () {
         return $("label[for='yes-social-benefits']");
     }
+    get socialSecurityBenefitsNoRadioBtn () {
+        return $("label[for='no-social-benefits']");
+    }
+
     get maritalStatusText () {
         return $("#marital-status-label");
     }
@@ -92,6 +96,7 @@ class HomePage {
     
    
     async navigateToHomePage () {
+        //This function navigates user to home page
         console.log(testData.base_url)
         await browser.url(testData.base_url)
         await browser.maximizeWindow();
@@ -100,6 +105,7 @@ class HomePage {
 
     
     async fillAllRequiredFields (testDataName) {
+        //This function fills all required fields to submit a form
         await this.homePageText.waitForDisplayed();
         await this.currentAgeTextBox.setValue(testData[testDataName].CurrentAge);
         await this.retirementAgeTextBox.setValue(testData[testDataName].RetirementAge);
@@ -116,6 +122,7 @@ class HomePage {
     }
 
     async fillAdditionalSocialSecurityFields (testDataName) {
+        //This Function fill all fields related to SocialSecurity
         await this.socialSecurityBenefitsYesRadioBtn.click();
         await browser.pause(3000)
         await this.maritalStatusMarrienRadioBtn.waitForDisplayed();
@@ -125,6 +132,7 @@ class HomePage {
     }
 
     async fillDefaultCalculatorValues(testDataName){
+        ///This Function fill all fields related to Default Calculator Values
         await this.adjustDeafultValues.click();
         await this.adjustDeafultValuesModalText.waitForDisplayed();
         await this.additionalIncomeTextBox.setValue(testData[testDataName].AdditionalOtherIncome);
@@ -146,6 +154,7 @@ class HomePage {
 
 
     async submitAndVerifyResults(){
+        //This Function submits the form once filled and verifies the results are displayed as expected
         await this.calculateBtn.click();
         await this.resultsPageText.waitForDisplayed();
         let resultsPageText = await this.resultsPageText.getText();
@@ -156,6 +165,7 @@ class HomePage {
 
 
     async fillFormWithoutMandatoryFieldsAndSubmit(testDataName){
+        //This Function fills the form without mandatory form fields and submits the form
         await this.currentAnnualIncomeTextBox.click();
         await this.currentAnnualIncomeTextBox.setValue(testData[testDataName].CurrentAnnualIncome);
         await this.spouseAnnualIncomeTextBox.click();
@@ -171,6 +181,7 @@ class HomePage {
     }
 
     async validateRequiredFieldsErrorMessage(){
+        //This Function validates the error message when we sumit the form without filling the required fields
         await this.requiredFieldErrorMessage.waitForDisplayed();
         let requiredFieldMandatoryFieldMessage = await this.requiredFieldErrorMessage.getText();
         let invalidFieldErrorArr = [];
@@ -180,6 +191,24 @@ class HomePage {
         return [requiredFieldMandatoryFieldMessage, invalidFieldErrorArr]
     }
 
+   async scrollDownTillSSNRadioBtn(){
+    //This Function scrolls down till SSN radio buttons
+    await this.currentRetirementSavingsTextBox.scrollIntoView()
+    return this.socialSecurityBenefitsNoRadioBtn.isDisplayed();
+   }
+
+   async selectSSNNoRadioBtn(){
+    //This Function selects No Radio button for SSN
+    await this.socialSecurityBenefitsNoRadioBtn.click()
+    return this.socialSecurityBenefitsNoRadioBtn.isDisplayed();
+   }
+
+   async validateSSNFieldsNotDisplayed(){
+    //This Function validates no SSN fields are displayed on page when we select No SSN Radio Button
+    let maritalStatusOptions = await this.maritalStatusText.isDisplayed();
+    let socailSecurityOverrideAmountTextBox = await this.socailSecurityOverrideAmountTextBox.isDisplayed();
+    return [maritalStatusOptions,socailSecurityOverrideAmountTextBox]
+   }
 
 
 
